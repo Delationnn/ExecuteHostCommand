@@ -20,7 +20,7 @@ public class ExecuteHostCommandPlugin {
 
     @Subscribe
     public void onProxyInitialization(ProxyInitializeEvent event) {
-        HostCommandExecutor commandExecutor = new HostCommandExecutor(server, logger);
+        HostCommandExecutor commandExecutor = new HostCommandExecutor(server, logger, this);
         server.getCommandManager().register("executehostcommand", commandExecutor, "ehc");
     }
 }
