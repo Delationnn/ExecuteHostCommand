@@ -18,16 +18,16 @@ public class HostCommandExecutor implements SimpleCommand {
     private final Object plugin; // Plugin instance
     private final Map<UUID, Process> activeProcesses = new HashMap<>();
 
-    // Constructor
     public HostCommandExecutor(ProxyServer server, Logger logger, Object plugin) {
         this.server = server;
         this.logger = logger;
         this.plugin = plugin; // Save the plugin instance
-        this.server.getEventManager().register(plugin, this); // Register this class as an event listener
+        // Ensure this class is registered with the plugin instance
+        server.getEventManager().register(plugin, this);
     }
 
     @Override
-    public void execute(SimpleCommand.Invocation invocation) {
+    public void execute(Invocation invocation) {
         CommandSource source = invocation.source();
         String[] args = invocation.arguments();
 
@@ -45,7 +45,7 @@ public class HostCommandExecutor implements SimpleCommand {
         }
 
         List<String> argsList = new ArrayList<>(Arrays.asList(args));
-        boolean useInput = argsList.remove("--input");
+        boolean useInput = argsList.remove("--input"); // Detect --input flag
         String command = String.join(" ", argsList);
 
         executeHostCommand(command, source, useInput);
@@ -95,8 +95,7 @@ public class HostCommandExecutor implements SimpleCommand {
         String message = event.getMessage();
 
         if (activeProcesses.containsKey(playerId)) {
-            // Cancel the message from being sent to chat
-            event.setResult(PlayerChatEvent.ChatResult.denied());
+            event.setResult(PlayerChatEvent.ChatResult.denied()); // Cancel the chat message
 
             try {
                 Process process = activeProcesses.get(playerId);
