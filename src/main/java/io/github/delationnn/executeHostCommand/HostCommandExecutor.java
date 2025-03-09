@@ -17,10 +17,10 @@ public class HostCommandExecutor implements SimpleCommand {
     private final Logger logger;
     private final Map<UUID, Process> activeProcesses = new HashMap<>();
 
-    public HostCommandExecutor(ProxyServer server, Logger logger) {
+    public HostCommandExecutor(ProxyServer server, Logger logger, Object plugin) {
         this.server = server;
         this.logger = logger;
-        server.getEventManager().register(this, this);
+        this.server.getEventManager().register(plugin, this); // Register the event listener with the plugin instance
     }
 
     @Override
