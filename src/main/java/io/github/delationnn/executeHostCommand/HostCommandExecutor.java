@@ -15,12 +15,15 @@ import java.util.*;
 public class HostCommandExecutor implements SimpleCommand {
     private final ProxyServer server;
     private final Logger logger;
+    private final Object plugin; // Plugin instance
     private final Map<UUID, Process> activeProcesses = new HashMap<>();
 
+    // Constructor
     public HostCommandExecutor(ProxyServer server, Logger logger, Object plugin) {
         this.server = server;
         this.logger = logger;
-        this.server.getEventManager().register(plugin, this); // Register the event listener with the plugin instance
+        this.plugin = plugin; // Save the plugin instance
+        this.server.getEventManager().register(plugin, this); // Register this class as an event listener
     }
 
     @Override
@@ -62,7 +65,7 @@ public class HostCommandExecutor implements SimpleCommand {
             }
 
             // Async output reading
-            server.getScheduler().buildTask(this, () -> {
+            server.getScheduler().buildTask(plugin, () -> { // Use plugin instance here
                 try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
                     String line;
                     while ((line = reader.readLine()) != null) {
@@ -92,6 +95,7 @@ public class HostCommandExecutor implements SimpleCommand {
         String message = event.getMessage();
 
         if (activeProcesses.containsKey(playerId)) {
+            // Cancel the message from being sent to chat
             event.setResult(PlayerChatEvent.ChatResult.denied());
 
             try {
